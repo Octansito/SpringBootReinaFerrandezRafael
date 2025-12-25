@@ -22,18 +22,18 @@ public class Animal {
     @Column(name = "id_animal")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name="nombre", nullable = false)
     private String nombre;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="tipo", nullable = false)
     private AnimalTipo tipo;
 
-    @Column(nullable = false)
-    private int edad;
+    @Column(name="edad", nullable = false)
+    private Integer edad;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="estado", nullable = false)
     private AnimalEstado estado;
 
     @Column(name = "fecha_ingreso", nullable = false)

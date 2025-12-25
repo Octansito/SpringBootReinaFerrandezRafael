@@ -25,13 +25,13 @@ public class Adopcion {
     @Column(name = "nombre_adoptante", nullable = false)
     private String nombreAdoptante;
 
-    @Column(nullable = false)
+    @Column(name="telefono", nullable = false)
     private String telefono;
 
     @Column(name = "fecha_adopcion", nullable = false)
     private LocalDate fechaAdopcion;
 
-    @Column(nullable = false)
+    @Column(name="direccion", nullable = false)
     private String direccion;
 
     @JsonManagedReference

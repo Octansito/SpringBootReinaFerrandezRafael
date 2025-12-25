@@ -23,11 +23,11 @@ public class Grupo {
     private DiaSemana diaSemana;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="turno", nullable = false)
     private Turno turno;
 
     @ManyToOne
-    @JoinColumn(name = "responsable")
+    @JoinColumn(name = "responsable", nullable=false)
     private Voluntario responsable;
 
     @ManyToMany

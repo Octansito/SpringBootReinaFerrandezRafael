@@ -15,20 +15,20 @@ import java.util.Set;
 
 public class Voluntario {
     @Id
-    @Column(length = 9)
+    @Column(name="dni", length = 9)
     private String dni;
 
-    @Column(nullable = false)
+    @Column(name="nombre", nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(name="telefono", nullable = false)
     private String telefono;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="rol", nullable = false)
     private VoluntarioRol rol;
 
-    @Column(nullable = false)
+    @Column(name="antiguedad", nullable = false)
     private int antiguedad;
 
     @ManyToMany
