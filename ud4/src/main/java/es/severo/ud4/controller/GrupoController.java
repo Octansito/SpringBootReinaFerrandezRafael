@@ -3,6 +3,7 @@ package es.severo.ud4.controller;
 import es.severo.ud4.dto.AdopcionDTO;
 import es.severo.ud4.dto.AnimalDTO;
 import es.severo.ud4.dto.GrupoDTO;
+import es.severo.ud4.dto.VoluntarioDTO;
 import es.severo.ud4.service.GrupoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -113,11 +114,8 @@ public class GrupoController {
     /**
      * Subruta: Voluntarios de un grupo
      */
-    /**
-     * Subruta de animales en una adopcion
-     */
     @GetMapping("/{id}/voluntarios")
-    public ResponseEntity<List<GrupoDTO>> getVoluntariosByGrupo(@PathVariable Long id) {
+    public ResponseEntity<List<VoluntarioDTO>> getVoluntariosByGrupo(@PathVariable Long id) {
         return ResponseEntity.ok(
                 grupoService.findVoluntariosByGrupo(id)
         );
