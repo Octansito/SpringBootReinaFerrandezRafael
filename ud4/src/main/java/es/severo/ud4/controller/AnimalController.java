@@ -2,7 +2,6 @@ package es.severo.ud4.controller;
 
 import es.severo.ud4.dto.AnimalDTO;
 
-import es.severo.ud4.entities.Animal;
 import es.severo.ud4.entities.AnimalEstado;
 import es.severo.ud4.entities.AnimalTipo;
 import es.severo.ud4.service.AnimalService;
