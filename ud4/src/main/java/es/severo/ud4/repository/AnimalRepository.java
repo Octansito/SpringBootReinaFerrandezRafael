@@ -20,9 +20,11 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     // Relación Animal-->Adopcion
     List<Animal> findByAdopcionNombreAdoptante(String nombre);
     //Conteo por estado
-    long contByEstado(AnimalEstado estado);
+    long countByEstado(AnimalEstado estado);
+
     Page<Animal> findAll (Pageable pageable);
-    Page<Animal> findByEstado(AnimalEstado estado, Pageable pageable);
+//    Page<Animal> findByEstado(AnimalEstado estado, Pageable pageable);
+
     // Ordenación
     Page<Animal> findByEstadoOrderByFechaIngresoDesc(AnimalEstado estado,Pageable pageable);
 

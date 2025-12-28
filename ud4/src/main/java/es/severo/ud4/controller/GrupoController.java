@@ -1,123 +1,224 @@
 package es.severo.ud4.controller;
 
-import es.severo.ud4.dto.AdopcionDTO;
-import es.severo.ud4.dto.AnimalDTO;
 import es.severo.ud4.dto.GrupoDTO;
-import es.severo.ud4.dto.VoluntarioDTO;
+import es.severo.ud4.entities.DiaSemana;
+import es.severo.ud4.entities.Grupo;
+import es.severo.ud4.entities.Voluntario;
 import es.severo.ud4.service.GrupoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/grupos")
 public class GrupoController {
+
     private final GrupoService grupoService;
 
     public GrupoController(GrupoService grupoService) {
         this.grupoService = grupoService;
     }
+
     /**
-     * Obtener todas los grupos
+     * GET ALL (paginado)
      */
-
     @GetMapping
-    @Operation(
-            description = "Obtener todos los grupos",
-            summary = "Devuelve la lista completa de los grupos"
-    )
-    @ApiResponses(
-            value={@ApiResponse(responseCode = "200", description = "Grupo encontrado correctamente"),
-                    @ApiResponse(responseCode = "404", description = "Grupo no encontrado")
+    public ResponseEntity<Page<GrupoDTO>> findAll(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
 
+        Page<GrupoDTO> page = grupoService.findAll(pageable)
+                .map(g -> new GrupoDTO(
+                        g.getId(),
+                        g.getDiaSemana(),
+                        g.getTurno(),
+                        g.getResponsable().getDni()
+                ));
 
-            })
-    public ResponseEntity<List<GrupoDTO>> getAll() {
-        return ResponseEntity.ok(grupoService.findAll());
+        return ResponseEntity.ok(page);
+    }
+
+    /**
+     * GET por día de la semana
+     * /api/grupos/dia/Lunes
+     */
+    @GetMapping("/dia/{diaSemana}")
+    public ResponseEntity<List<GrupoDTO>> findByDiaSemana(
+            @PathVariable DiaSemana diaSemana
+    ) {
+
+        List<GrupoDTO> lista = grupoService.findByDiaSemana(diaSemana)
+                .stream()
+                .map(g -> new GrupoDTO(
+                        g.getId(),
+                        g.getDiaSemana(),
+                        g.getTurno(),
+                        g.getResponsable().getDni()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(lista);
+    }
+
+    /**
+     * GET por responsable (JPQL)
+     * /api/grupos/responsable/{dni}
+     */
+    @GetMapping("/responsable/{dni}")
+    public ResponseEntity<List<GrupoDTO>> findGroupsByResponsable(
+            @PathVariable String dni
+    ) {
+
+        List<GrupoDTO> lista = grupoService.buscarGruposPorResponsable(dni)
+                .stream()
+                .map(g -> new GrupoDTO(
+                        g.getId(),
+                        g.getDiaSemana(),
+                        g.getTurno(),
+                        g.getResponsable().getDni()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(lista);
     }
     /**
-     * Obtener grupo por id
+     * Obtiene 1 por id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<GrupoDTO> getById(@PathVariable(name="id")Long id){
-        Optional<GrupoDTO> grupo=grupoService.findById(id);
-        if(grupo.isPresent()){
-            return ResponseEntity.ok(grupo.get());
+    public ResponseEntity<GrupoDTO> findById(@PathVariable Long id) {
+
+        Optional<Grupo> grupoOpt = grupoService.findById(id);
+
+        if (grupoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.noContent().build();
+
+        Grupo g = grupoOpt.get();
+
+        GrupoDTO dto = new GrupoDTO(
+                g.getId(),
+                g.getDiaSemana(),
+                g.getTurno(),
+                g.getResponsable().getDni()
+        );
+
+        return ResponseEntity.ok(dto);
     }
+
+
     /**
-     * Crear grupo
+     * crea
      */
     @PostMapping
-    public ResponseEntity<GrupoDTO> create(@RequestBody GrupoDTO dto){
-        GrupoDTO creado= grupoService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+    public ResponseEntity<GrupoDTO> create(@RequestBody GrupoDTO dto) {
+
+        Grupo grupo = new Grupo();
+        grupo.setDiaSemana(dto.diaSemana());
+        grupo.setTurno(dto.turno());
+
+        Voluntario responsable = new Voluntario();
+        responsable.setDni(dto.responsableDni());
+        grupo.setResponsable(responsable);
+
+        Grupo guardado = grupoService.save(grupo);
+
+        GrupoDTO resultado = new GrupoDTO(
+                guardado.getId(),
+                guardado.getDiaSemana(),
+                guardado.getTurno(),
+                guardado.getResponsable().getDni()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
     }
+
     /**
-     * Actualizar grupo completa
+     * actualiza
      */
     @PutMapping("/{id}")
-    public ResponseEntity<GrupoDTO> updateGrupo(@RequestBody GrupoDTO dto, @PathVariable Long id){
-        Optional<GrupoDTO> optionalGrupo=grupoService.findById(id);
-        if(optionalGrupo.isPresent()){
-            GrupoDTO grupoDb=optionalGrupo.get();
-            grupoDb.setDiaSemana(dto.diaSemana());
-            grupoDb.setTurno(dto.turno());
-            grupoDb.setResponsableDni(dto.responsableDni());
-            grupoService.save(grupoDb);
-            return ResponseEntity.ok(grupoDb);
+    public ResponseEntity<GrupoDTO> update(
+            @PathVariable Long id,
+            @RequestBody GrupoDTO dto
+    ) {
+
+        Optional<Grupo> grupoOpt = grupoService.findById(id);
+
+        if (grupoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.notFound().build();
+
+        Grupo grupo = grupoOpt.get();
+        grupo.setDiaSemana(dto.diaSemana());
+        grupo.setTurno(dto.turno());
+
+        Voluntario responsable = new Voluntario();
+        responsable.setDni(dto.responsableDni());
+        grupo.setResponsable(responsable);
+
+        Grupo actualizado = grupoService.save(grupo);
+
+        GrupoDTO resultado = new GrupoDTO(
+                actualizado.getId(),
+                actualizado.getDiaSemana(),
+                actualizado.getTurno(),
+                actualizado.getResponsable().getDni()
+        );
+
+        return ResponseEntity.ok(resultado);
     }
     /**
-     * Actualizar datos parciales de una grupo (responsable)
+     * Actualización parcial (responsable)
+     * /api/grupos/{id}
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<GrupoDTO> updatePartially(@PathVariable Long id, @RequestBody GrupoDTO dto){
-        Optional<GrupoDTO> optionalGrupo=grupoService.findById(id);
-        if(optionalGrupo.isPresent()){
-            GrupoDTO grupoDb= optionalGrupo.get();
-            grupoDb.setResponsableDni(dto.responsableDni());
-            grupoService.save(grupoDb);
-            return ResponseEntity.ok(grupoDb);
+    public ResponseEntity<GrupoDTO> updatePartial(
+            @PathVariable Long id,
+            @RequestBody GrupoDTO dto
+    ) {
+        Optional<Grupo> grupoOpt = grupoService.findById(id);
+
+        if (grupoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Borrar grupo
-     */
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        Optional<GrupoDTO> grupoDTO=grupoService.findById(id);
-        if(grupoDTO.isPresent()){
-            grupoService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Obtener grupos paginados
-     */
-    @GetMapping("/page")
-    public ResponseEntity<List<GrupoDTO>> getPageableGrupos(@RequestParam(name="page") int nPage, @RequestParam (name="size") int nItems){
-        Page<GrupoDTO> grupoDTOPage=grupoService.findAllPageable (nPage-1, nItems);
-        return ResponseEntity.ok(grupoDTOPage.getContent());
-    }
-    /**
-     * Subruta: Voluntarios de un grupo
-     */
-    @GetMapping("/{id}/voluntarios")
-    public ResponseEntity<List<VoluntarioDTO>> getVoluntariosByGrupo(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                grupoService.findVoluntariosByGrupo(id)
+
+        Grupo grupo = grupoOpt.get();
+
+        // SOLO campo modificable: responsable
+        Voluntario responsable = new Voluntario();
+        responsable.setDni(dto.responsableDni());
+        grupo.setResponsable(responsable);
+
+        Grupo actualizado = grupoService.save(grupo);
+
+        GrupoDTO dtoActualizado = new GrupoDTO(
+                actualizado.getId(),
+                actualizado.getDiaSemana(),
+                actualizado.getTurno(),
+                actualizado.getResponsable().getDni()
         );
+
+        return ResponseEntity.ok(dtoActualizado);
+    }
+
+    /**
+     * DELETE
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        if (grupoService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        grupoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

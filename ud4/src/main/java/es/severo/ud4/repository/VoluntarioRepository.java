@@ -13,13 +13,10 @@ public interface VoluntarioRepository extends JpaRepository<Voluntario, String> 
     //Filtrar por rol de voluntario
     List<Voluntario> findByRol(VoluntarioRol rol);
 
-    // Relación Voluntario-->Animal (ManyToMany)
-    List<Voluntario> findByAnimalesNombre(String nombreAnimal);
-
     //Buscar todos los voluntarios
     Page<Voluntario> findAll(Pageable pageable);
 
-    // JPQL: voluntarios que atienden a un animal
-    @Query("SELECT FROM Voluntario v JOIN v.animales a WHERE a.nombre = :nombreAnimal")
+    //JPQL: voluntarios que atienden a un animal
+    @Query("SELECT v FROM Voluntario v JOIN v.animales a WHERE a.nombre = :nombreAnimal")
     List<Voluntario> buscarVoluntariosPorAnimal(@Param("nombreAnimal") String nombreAnimal);
 }

@@ -1,4 +1,7 @@
 package es.severo.ud4.dto;
 
-public record GrupoDTO(Long id, String diaSemana, String turno, String responsableDni) {
+import es.severo.ud4.entities.DiaSemana;
+import es.severo.ud4.entities.Turno;
+
+public record GrupoDTO(Long id, DiaSemana diaSemana, Turno turno, String responsableDni) {
 }

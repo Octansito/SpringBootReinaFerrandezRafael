@@ -14,9 +14,6 @@ public interface GrupoRepository extends JpaRepository<Grupo, Long> {
     //Filtrar por dia de la semana
     List<Grupo> findByDiaSemana(DiaSemana diaSemana);
 
-    //Relación Grupo-->Voluntario (responsable)
-    List<Grupo> findByResponsableDni(String dni);
-
     //Encontrar todos los grupos
     Page<Grupo> findAll(Pageable pageable);
     // JPQL: grupos por responsable

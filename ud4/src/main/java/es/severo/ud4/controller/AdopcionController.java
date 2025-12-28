@@ -1,116 +1,188 @@
 package es.severo.ud4.controller;
 
 import es.severo.ud4.dto.AdopcionDTO;
-import es.severo.ud4.dto.AnimalDTO;
+import es.severo.ud4.entities.Adopcion;
 import es.severo.ud4.service.AdopcionService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/adopciones")
 public class AdopcionController {
+
     private final AdopcionService adopcionService;
 
     public AdopcionController(AdopcionService adopcionService) {
         this.adopcionService = adopcionService;
     }
 
-
-
     /**
-     * Obtener todas las adopciones
+     * GET ALL (paginado)
+     * /api/adopciones
      */
-
     @GetMapping
-    @Operation(
-            description = "Obtener todos las adopciones",
-            summary = "Devuelve la lista completa de las adopciones registradas"
-    )
-    @ApiResponses(
-            value={@ApiResponse(responseCode = "200", description = "Adopcion encontrado correctamente"),
-                    @ApiResponse(responseCode = "404", description = "Adopcion no encontrado")
+    public ResponseEntity<Page<Adopcion>> findAll(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
 
-
-            })
-    public ResponseEntity<List<AdopcionDTO>> getAll() {
-        return ResponseEntity.ok(adopcionService.findAll());
+        Page<Adopcion> page = adopcionService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
+
     /**
-     * Buscar adopcion por id
+     * GET por nombre adoptante
+     * /api/adopciones/nombre/{nombre}
+     */
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<Page<Adopcion>> findByNombre(
+            @PathVariable String nombre,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        Page<Adopcion> page = adopcionService.findByNombreAdoptante(nombre, pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    /**
+     * GET ordenado por fecha descendente
+     * /api/adopciones/fecha
+     */
+    @GetMapping("/fecha")
+    public ResponseEntity<Page<Adopcion>> findAllOrderByFecha(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        Page<Adopcion> page = adopcionService.findAllOrderByFechaDesc(pageable);
+        return ResponseEntity.ok(page);
+    }
+
+
+    /**
+     * GET por rango de fechas
+     * /api/adopciones/fechas_inicio=2024-01-01 y fin=2024-12-31
+     */
+    @GetMapping("/fechas")
+    public ResponseEntity<Page<Adopcion>> findByFechas(
+            @RequestParam LocalDate inicio,
+            @RequestParam LocalDate fin,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        Page<Adopcion> page = adopcionService.findByFechaBetween(inicio, fin, pageable);
+        return ResponseEntity.ok(page);
+    }
+//    /**
+//     * GET por nombre adoptante (no paginado)
+//     * /api/adopciones/nombre/{nombre}
+//     */
+//    @GetMapping("/nombre/{nombre}")
+//    public ResponseEntity<List<Adopcion>> findByNombreLista(
+//            @PathVariable String nombre
+//    ) {
+//
+//        List<Adopcion> lista = adopcionService.findByNombre(nombre);
+//        return ResponseEntity.ok(lista);
+//    }
+
+    /**
+     * Obtiene 1 por id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<AdopcionDTO> getById(@PathVariable(name="id")Long id){
-        Optional<AdopcionDTO> adopcion=adopcionService.findById(id);
-        if(adopcion.isPresent()){
-            return ResponseEntity.ok(adopcion.get());
+    public ResponseEntity<Adopcion> findById(@PathVariable Long id) {
+
+        Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
+
+        if (adopcionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.noContent().build();
-    }
-    /**
-     * Crear adopcion
-     */
-    @PostMapping
-    public ResponseEntity<AdopcionDTO> create(@RequestBody AdopcionDTO dto){
-        AdopcionDTO creado= adopcionService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
-    }
-    /**
-     * Actualizar adopcion completa
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<AdopcionDTO> updateAdopcion(@RequestBody AdopcionDTO dto, @PathVariable Long id){
-        Optional<AdopcionDTO> optionalAdopcion=adopcionService.findById(id);
-        if(optionalAdopcion.isPresent()){
-            AdopcionDTO adopcionDTO=optionalAdopcion.get();
-            adopcionDTO.setNombreAdoptante(dto.nombreAdoptante());
-            adopcionDTO.setFechaAdopcion(dto.fechaAdopcion());
-            adopcionDTO.setDireccion(dto.direccion());
-            adopcionService.save(adopcionDTO);
-            return ResponseEntity.ok(adopcionDTO);
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Actualizar datos parciales de una adopcion (direccion)
-     */
-    @PatchMapping("/{id}")
-    public ResponseEntity<AdopcionDTO> updatePartially(@PathVariable Long id, @RequestBody AdopcionDTO dto){
-        Optional<AdopcionDTO> optionalAdopcion=adopcionService.findById(id);
-        if(optionalAdopcion.isPresent()){
-            AdopcionDTO adopcionDB= optionalAdopcion.get();
-            adopcionDB.setDireccion(dto.direccion());
-            adopcionService.save(adopcionDB);
-            return ResponseEntity.ok(adopcionDB);
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Borrar adopcion
-     */
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        Optional<AdopcionDTO> adopcionDTO=adopcionService.findById(id);
-        if(adopcionDTO.isPresent()){
-            adopcionService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Subruta de animales en una adopcion
-     */
-    @GetMapping("/{id}/animales")
-    public ResponseEntity<List<AnimalDTO>> getAnimalesByAdopcion(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                adopcionService.findAnimalesByAdopcion(id)
-        );
+
+        return ResponseEntity.ok(adopcionOpt.get());
     }
 
+    /**
+     * Crea
+     */
+    @PostMapping
+    public ResponseEntity<Adopcion> create(@RequestBody Adopcion adopcion) {
+
+        Adopcion guardada = adopcionService.save(adopcion);
+        return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
+    }
+
+    /**
+     * actualiza
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Adopcion> update(
+            @PathVariable Long id,
+            @RequestBody Adopcion adopcion
+    ) {
+
+        Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
+
+        if (adopcionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        adopcion.setId(id);
+        Adopcion actualizada = adopcionService.save(adopcion);
+
+        return ResponseEntity.ok(actualizada);
+    }
+
+    /**
+     *Actualización parcial (dirección)
+     * /api/adopciones/{id}
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<AdopcionDTO> updatePartial(
+            @PathVariable Long id,
+            @RequestBody AdopcionDTO dto
+    ) {
+        Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
+
+        if (adopcionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Adopcion adopcion = adopcionOpt.get();
+
+        // SOLO campo modificable
+        adopcion.setDireccion(dto.direccion());
+
+        Adopcion actualizada = adopcionService.save(adopcion);
+
+        AdopcionDTO dtoActualizado = new AdopcionDTO(
+                actualizada.getId(),
+                actualizada.getNombreAdoptante(),
+                actualizada.getFechaAdopcion(),
+                actualizada.getDireccion()
+        );
+
+        return ResponseEntity.ok(dtoActualizado);
+    }
+
+
+
+    /**
+     * DELETE
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        if (adopcionService.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        adopcionService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

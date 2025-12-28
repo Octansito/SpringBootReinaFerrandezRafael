@@ -1,12 +1,13 @@
 package es.severo.ud4.controller;
 
-import es.severo.ud4.dto.AnimalDTO;
-import es.severo.ud4.dto.GrupoDTO;
 import es.severo.ud4.dto.VoluntarioDTO;
+import es.severo.ud4.entities.Voluntario;
+import es.severo.ud4.entities.VoluntarioRol;
 import es.severo.ud4.service.VoluntarioService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,112 +16,147 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping ("/api/voluntarios")
+@RequestMapping("/api/voluntarios")
 public class VoluntarioController {
+
     private final VoluntarioService voluntarioService;
 
     public VoluntarioController(VoluntarioService voluntarioService) {
         this.voluntarioService = voluntarioService;
     }
+
     /**
-     * Obtener todas los voluntarios
+     * GET ALL (paginado)
+     * /api/voluntarios
      */
-
     @GetMapping
-    @Operation(
-            description = "Obtener todos los voluntarios",
-            summary = "Devuelve la lista completa de los voluntarios"
-    )
-    @ApiResponses(
-            value={@ApiResponse(responseCode = "200", description = "Voluntario encontrado correctamente"),
-                    @ApiResponse(responseCode = "404", description = "Voluntario no encontrado")
+    public ResponseEntity<Page<Voluntario>> findAll(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
 
-
-            })
-    public ResponseEntity<List<VoluntarioDTO>> getAll() {
-        return ResponseEntity.ok(voluntarioService.findAll());
+        Page<Voluntario> page = voluntarioService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
+
+
     /**
-     * Obtener voluntario por dni
+     * GET por rol
+     * /api/voluntarios/rol/{rol}
+     */
+    @GetMapping("/rol/{rol}")
+    public ResponseEntity<List<Voluntario>> findByRol(
+            @PathVariable VoluntarioRol rol
+    ) {
+
+        List<Voluntario> lista = voluntarioService.findByRol(rol);
+        return ResponseEntity.ok(lista);
+    }
+
+    /**
+     * GET por animal (JPQL)
+     * Busca la cantidad de voluntarios encargados de un animal
+     * /api/voluntarios/animal/{nombre}
+     */
+    @GetMapping("/animal/{nombre}")
+    public ResponseEntity<List<Voluntario>> findByAnimal(
+            @PathVariable String nombre
+    ) {
+
+        List<Voluntario> lista = voluntarioService.buscarVoluntariosPorAnimal(nombre);
+        return ResponseEntity.ok(lista);
+    }
+
+    /**
+     * Obtiene uno por dni
      */
     @GetMapping("/{dni}")
-    public ResponseEntity<VoluntarioDTO> getById(@PathVariable(name="dni")String dni){
-        Optional<VoluntarioDTO> voluntario=voluntarioService.findById(dni);
-        if(voluntario.isPresent()){
-            return ResponseEntity.ok(voluntario.get());
+    public ResponseEntity<Voluntario> findById(@PathVariable String dni) {
+
+        Optional<Voluntario> voluntarioOpt = voluntarioService.findById(dni);
+
+        if (voluntarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return  ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(voluntarioOpt.get());
     }
+
     /**
-     * Crear voluntario
+     * crea
      */
     @PostMapping
-    public ResponseEntity<VoluntarioDTO> create(@RequestBody VoluntarioDTO dto){
-        VoluntarioDTO creado= voluntarioService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
-    }
-    /**
-     * Actualizar voluntario completo
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<VoluntarioDTO> updateVoluntario(@RequestBody VoluntarioDTO dto, @PathVariable String dni){
-        Optional<GrupoDTO> optionalVoluntario=voluntarioService.findById(dni);
-        if(optionalVoluntario.isPresent()){
-            VoluntarioDTO voluntarioDTO=voluntarioService.get();
-            voluntarioDTO.setDni(dto.dni());
-            voluntarioDTO.setNombre(dto.nombre());
-            voluntarioDTO.setRol(dto.rol());
-            voluntarioDTO.setAntiguedad(dto.antiguedad());
-            voluntarioService.save(voluntarioDTO);
-            return ResponseEntity.ok(voluntarioDTO);
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Actualizar datos parciales de un voluntario(responsable)
-     */
-    @PatchMapping("/{id}")
-    public ResponseEntity<VoluntarioDTO> updatePartially(@PathVariable String dni, @RequestBody VoluntarioDTO dto){
-        Optional<VoluntarioDTO> optionalVoluntario=voluntarioService.findById(dni);
-        if(optionalVoluntario.isPresent()){
-            VoluntarioDTO voluntarioDTO= optionalVoluntario.get();
-            voluntarioDTO.setRol(dto.rol());
-            voluntarioDTO.setAntiguedad(dto.antiguedad());
-            voluntarioService.save(voluntarioDTO);
-            return ResponseEntity.ok(voluntarioDTO);
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Borrar voluntario
-     */
-    @DeleteMapping("{dni}")
-    public ResponseEntity<Void> delete(@PathVariable String dni){
-        Optional<VoluntarioDTO> voluntarioDTO=voluntarioService.findById(dni);
-        if(voluntarioDTO.isPresent()){
-            voluntarioDTO.deleteById(dni);
-            return ResponseEntity.noContent().build();
-        }
-        return  ResponseEntity.notFound().build();
-    }
-    /**
-     * Subruta: animales atendidos por un voluntario
-     */
-    @GetMapping("/{dni}/animales")
+    public ResponseEntity<Voluntario> create(
+            @RequestBody Voluntario voluntario
+    ) {
 
-    public ResponseEntity<List<AnimalDTO>> getAnimalesByVoluntario(@PathVariable String dni) {
-        return ResponseEntity.ok(
-                voluntarioService.findAnimalesByVoluntario(dni)
-        );
+        Voluntario guardado = voluntarioService.save(voluntario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 
     /**
-     * Subruta: grupos del voluntario
+     * actualiza
      */
-    @GetMapping("/{dni}/grupos")
-    public ResponseEntity<?> getGruposByVoluntario(@PathVariable String dni) {
-        return ResponseEntity.ok(
-                voluntarioService.findGruposByVoluntario(dni)
+    @PutMapping("/{dni}")
+    public ResponseEntity<Voluntario> update(
+            @PathVariable String dni,
+            @RequestBody Voluntario voluntario
+    ) {
+
+        Optional<Voluntario> voluntarioOpt = voluntarioService.findById(dni);
+
+        if (voluntarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        voluntario.setDni(dni);
+        Voluntario actualizado = voluntarioService.save(voluntario);
+
+        return ResponseEntity.ok(actualizado);
+    }
+    /**
+     * Actualización parcial (rol y antigüedad)
+     * /api/voluntarios/{dni}
+     */
+    @PatchMapping("/{dni}")
+    public ResponseEntity<VoluntarioDTO> updatePartial(
+            @PathVariable String dni,
+            @RequestBody VoluntarioDTO dto
+    ) {
+        Optional<Voluntario> voluntarioOpt = voluntarioService.findById(dni);
+
+        if (voluntarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Voluntario voluntario = voluntarioOpt.get();
+
+        // SOLO campos modificables
+        voluntario.setRol(dto.rol());
+        voluntario.setAntiguedad(dto.antiguedad());
+
+        Voluntario actualizado = voluntarioService.save(voluntario);
+
+        VoluntarioDTO dtoActualizado = new VoluntarioDTO(
+                actualizado.getDni(),
+                actualizado.getNombre(),
+                actualizado.getRol(),
+                actualizado.getAntiguedad()
         );
+
+        return ResponseEntity.ok(dtoActualizado);
+    }
+
+    /**
+     * DELETE
+     */
+    @DeleteMapping("/{dni}")
+    public ResponseEntity<Void> delete(@PathVariable String dni) {
+
+        if (voluntarioService.findById(dni).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        voluntarioService.deleteById(dni);
+        return ResponseEntity.noContent().build();
     }
 }
