@@ -90,6 +90,30 @@ public class GrupoController {
         return ResponseEntity.ok(lista);
     }
     /**
+     * GET responsable de un grupo
+     * /api/grupos/{id}/responsable
+     */
+    @GetMapping("/{id}/responsable")
+    public ResponseEntity<String> findResponsableByGrupo(
+            @PathVariable Long id
+    ) {
+        Optional<Grupo> grupoOpt = grupoService.findById(id);
+
+        if (grupoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Grupo grupo = grupoOpt.get();
+
+        if (grupo.getResponsable() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Devuelve el DNI del responsable
+        return ResponseEntity.ok(grupo.getResponsable().getDni());
+    }
+
+    /**
      * Obtiene 1 por id
      */
     @GetMapping("/{id}")

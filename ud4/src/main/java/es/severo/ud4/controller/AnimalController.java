@@ -162,6 +162,30 @@ public class AnimalController {
             return ResponseEntity.notFound().build();
         }
     }
+    /**
+     * GET adopción de un animal
+     * /api/animales/{id}/adopcion
+     */
+    @GetMapping("/{id}/adopcion")
+    public ResponseEntity<Long> findAdopcionByAnimal(
+            @PathVariable Long id
+    ) {
+        Optional<Animal> animalOpt = animalService.findById(id);
+
+        if (animalOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Animal animal = animalOpt.get();
+
+        if (animal.getAdopcion() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Devuelves el ID de la adopción
+        return ResponseEntity.ok(animal.getAdopcion().getId());
+    }
+
 
     /**
      * Crear animal

@@ -10,6 +10,10 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
+@NamedQuery(
+        name = "Animal.findByTipoNamed",
+        query = "SELECT a FROM Animal a WHERE a.tipo = :tipo"
+)
 @Table(name = "animal")
 @Getter
 @Setter

@@ -28,8 +28,14 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     // Ordenación
     Page<Animal> findByEstadoOrderByFechaIngresoDesc(AnimalEstado estado,Pageable pageable);
 
-    // JPQL: selecciona de Animal los animales por tipo X
-    @Query("SELECT a FROM Animal a WHERE a.tipo = :tipo")
-    Page<Animal> buscarPorTipo(@Param("tipo") AnimalTipo tipo, Pageable pageable);
+    //NamedQuery
+    @Query(name = "Animal.findByTipoNamed")
+    Page<Animal> buscarPorTipo(
+            @Param("tipo") AnimalTipo tipo,
+            Pageable pageable
+    );
+//    // JPQL: selecciona de Animal los animales por tipo X
+//    @Query("SELECT a FROM Animal a WHERE a.tipo = :tipo")
+//    Page<Animal> buscarPorTipo(@Param("tipo") AnimalTipo tipo, Pageable pageable);
 
 }

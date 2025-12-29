@@ -1,6 +1,7 @@
 package es.severo.ud4.controller;
 
 import es.severo.ud4.dto.AdopcionDTO;
+import es.severo.ud4.dto.AnimalDTO;
 import es.severo.ud4.entities.Adopcion;
 import es.severo.ud4.service.AdopcionService;
 
@@ -91,6 +92,35 @@ public class AdopcionController {
 //        List<Adopcion> lista = adopcionService.findByNombre(nombre);
 //        return ResponseEntity.ok(lista);
 //    }
+    /**
+     * GET animales de una adopción
+     * /api/adopciones/{id}/animales
+     */
+    @GetMapping("/{id}/animales")
+    public ResponseEntity<List<AnimalDTO>> findAnimalesByAdopcion(
+            @PathVariable Long id
+    ) {
+        Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
+
+        if (adopcionOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<AnimalDTO> lista = adopcionOpt.get().getAnimales()
+                .stream()
+                .map(animal -> new AnimalDTO(
+                        animal.getId(),
+                        animal.getNombre(),
+                        animal.getTipo(),
+                        animal.getEstado(),
+                        animal.getEdad()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+
 
     /**
      * Obtiene 1 por id

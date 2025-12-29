@@ -22,7 +22,7 @@ public interface AdopcionRepository extends JpaRepository<Adopcion, Long> {
     //Ordenacion de fechas
     Page<Adopcion> findAllByOrderByFechaAdopcionDesc(Pageable pageable);
     // JPQL: buscar adopciones por nombre del adoptante
-    @Query("SELECT FROM Adopcion WHERE a.nombreAdoptante = :nombreORDER BY a.fechaAdopcion DESC")
+    @Query("SELECT a FROM Adopcion a WHERE a.nombreAdoptante = :nombre ORDER BY a.fechaAdopcion DESC")
     Page<Adopcion> buscarPorNombreAdoptante(@Param("nombre") String nombre, Pageable pageable);
 
 

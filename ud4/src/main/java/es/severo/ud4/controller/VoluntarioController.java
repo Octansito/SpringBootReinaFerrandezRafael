@@ -80,6 +80,29 @@ public class VoluntarioController {
 
         return ResponseEntity.ok(voluntarioOpt.get());
     }
+    /**
+     * GET animales asignados a un voluntario
+     * /api/voluntarios/{dni}/animales
+     */
+    @GetMapping("/{dni}/animales")
+    public ResponseEntity<List<String>> findAnimalesByVoluntario(
+            @PathVariable String dni
+    ) {
+        Optional<Voluntario> voluntarioOpt = voluntarioService.findById(dni);
+
+        if (voluntarioOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Voluntario voluntario = voluntarioOpt.get();
+
+        List<String> animales = voluntario.getAnimales()
+                .stream()
+                .map(a -> a.getNombre())
+                .toList();
+
+        return ResponseEntity.ok(animales);
+    }
 
     /**
      * crea

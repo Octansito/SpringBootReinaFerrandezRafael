@@ -33,7 +33,7 @@ public class AnimalService {
 //        return animalRepository.findByEstado(estado, pageable);
 //    }
 
-    // JPQL: buscar por tipo
+    // NamedQuery: buscar por tipo
     public Page<Animal> findByTipo(AnimalTipo tipo, Pageable pageable) {
         return animalRepository.buscarPorTipo(tipo, pageable);
     }
