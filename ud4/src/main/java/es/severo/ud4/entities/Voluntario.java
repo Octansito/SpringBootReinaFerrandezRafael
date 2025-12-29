@@ -1,5 +1,6 @@
 package es.severo.ud4.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class Voluntario {
     private VoluntarioRol rol;
 
     @Column(name="antiguedad", nullable = false)
-    private int antiguedad;
+    private Integer antiguedad;
 
     @ManyToMany
     @JoinTable(
@@ -37,8 +38,10 @@ public class Voluntario {
             joinColumns = @JoinColumn(name = "dni_voluntario"),
             inverseJoinColumns = @JoinColumn(name = "id_animal")
     )
+    @JsonIgnore
     private Set<Animal> animales;
 
     @ManyToMany(mappedBy = "voluntarios")
+    @JsonIgnore
     private Set<Grupo> grupos;
 }

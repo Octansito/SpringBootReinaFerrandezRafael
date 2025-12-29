@@ -35,7 +35,7 @@ public class AnimalService {
 
     // NamedQuery: buscar por tipo
     public Page<Animal> findByTipo(AnimalTipo tipo, Pageable pageable) {
-        return animalRepository.buscarPorTipo(tipo, pageable);
+        return animalRepository.findByTipo(tipo, pageable);
     }
     // Filtro por estado (NO paginado)
     public List<Animal> findByEstado(AnimalEstado estado) {
