@@ -1,3 +1,16 @@
+Proyecto 3: Spring Boot de la Protectora App
+
+En este proyecto había que introducir una nueva tabla. Anteriormente, teníamos Animal, Voluntario y Adopción. Ahora, se ha añadido la tabla Grupo
+que conforma una relación M:M con Voluntarios ya que 1 voluntario puede estar en 1 o muchos grupos y 1 Grupo puede tener 1 o muchos voluntarios.
+
+Base de Datos
+**Los atributos int al hacer reverse engineer/ forward engineer han pasado a ser BIGINT
+![img_7.png](img_7.png).
+
+
+
+
+
 ![img.png](img.png)
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
@@ -6,12 +19,41 @@
 ![img_4.png](img_4.png)
 ![img_5.png](img_5.png)
 ![img_6.png](img_6.png)
+![img_9.png](img_9.png)
+![img_10.png](img_10.png)
+![img_11.png](img_11.png)
+![img_13.png](img_13.png)
+![img_12.png](img_12.png)
+
+
+Prueba subrutas:
+![img_14.png](img_14.png)
+Me daba fallo el get en Swagger y probé en PostMan para obtener la adopción
+![img_15.png](img_15.png)
+
+Insercion Voluntarios
+![img_17.png](img_17.png)
+![img_16.png](img_16.png)
+![img_18.png](img_18.png)
+![img_19.png](img_19.png)
+
+Creo varios grupos de los cuales tienen de responsable a la misma persona con el dni 11111111A. Ejemplos:
+![img_26.png](img_26.png)
+![img_27.png](img_27.png)
+![img_28.png](img_28.png)
+
+Comprobación subrutas:
+
+A) Dni del responsable por id del grupo X
+![img_29.png](img_29.png)
+![img_30.png](img_30.png)
+
+B) Grupos de los que se encarga el voluntario responsable con dni Y
+![img_31.png](img_31.png)
 
 
 
-Base de Datos
-**Los atributos int al hacer reverse engineer/ forward engineer han pasado a ser BIGINT
-![img_7.png](img_7.png)
+
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;

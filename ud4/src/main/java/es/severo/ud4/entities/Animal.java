@@ -40,8 +40,9 @@ public class Animal {
     @Column(name="estado", nullable = false)
     private AnimalEstado estado;
 
-    @Column(name = "fecha_ingreso", nullable = false)
+    @Column(name = "fecha_ingreso")
     private LocalDate fechaIngreso;
+
 
     @JsonBackReference
     @ManyToOne

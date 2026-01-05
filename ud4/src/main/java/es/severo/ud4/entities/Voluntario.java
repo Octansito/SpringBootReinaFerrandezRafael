@@ -22,7 +22,7 @@ public class Voluntario {
     @Column(name="nombre", nullable = false)
     private String nombre;
 
-    @Column(name="telefono", nullable = false)
+    @Column(name="telefono")
     private String telefono;
 
     @Enumerated(EnumType.STRING)

@@ -30,11 +30,17 @@ public class AdopcionController {
      * /api/adopciones
      */
     @GetMapping
-    public ResponseEntity<Page<Adopcion>> findAll(
+    public ResponseEntity<Page<AdopcionDTO>> findAll(
             @PageableDefault(size = 10) Pageable pageable
     ) {
+        Page<AdopcionDTO> page = adopcionService.findAll(pageable)
+                .map(a -> new AdopcionDTO(
+                        a.getId(),
+                        a.getNombreAdoptante(),
+                        a.getFechaAdopcion(),
+                        a.getDireccion()
+                ));
 
-        Page<Adopcion> page = adopcionService.findAll(pageable);
         return ResponseEntity.ok(page);
     }
 
@@ -43,27 +49,45 @@ public class AdopcionController {
      * /api/adopciones/nombre/{nombre}
      */
     @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Page<Adopcion>> findByNombre(
+    public ResponseEntity<Page<AdopcionDTO>> findByNombre(
             @PathVariable String nombre,
             @PageableDefault(size = 10) Pageable pageable
     ) {
 
-        Page<Adopcion> page = adopcionService.findByNombreAdoptante(nombre, pageable);
+        Page<AdopcionDTO> page = adopcionService
+                .findByNombreAdoptante(nombre, pageable)
+                .map(a -> new AdopcionDTO(
+                        a.getId(),
+                        a.getNombreAdoptante(),
+                        a.getFechaAdopcion(),
+                        a.getDireccion()
+                ));
+
         return ResponseEntity.ok(page);
     }
+
 
     /**
      * GET ordenado por fecha descendente
      * /api/adopciones/fecha
      */
     @GetMapping("/fecha")
-    public ResponseEntity<Page<Adopcion>> findAllOrderByFecha(
+    public ResponseEntity<Page<AdopcionDTO>> findAllOrderByFecha(
             @PageableDefault(size = 10) Pageable pageable
     ) {
 
-        Page<Adopcion> page = adopcionService.findAllOrderByFechaDesc(pageable);
+        Page<AdopcionDTO> page = adopcionService
+                .findAllOrderByFechaDesc(pageable)
+                .map(a -> new AdopcionDTO(
+                        a.getId(),
+                        a.getNombreAdoptante(),
+                        a.getFechaAdopcion(),
+                        a.getDireccion()
+                ));
+
         return ResponseEntity.ok(page);
     }
+
 
 
     /**
@@ -71,15 +95,24 @@ public class AdopcionController {
      * /api/adopciones/fechas_inicio=2024-01-01 y fin=2024-12-31
      */
     @GetMapping("/fechas")
-    public ResponseEntity<Page<Adopcion>> findByFechas(
+    public ResponseEntity<Page<AdopcionDTO>> findByFechas(
             @RequestParam LocalDate inicio,
             @RequestParam LocalDate fin,
             @PageableDefault(size = 10) Pageable pageable
     ) {
 
-        Page<Adopcion> page = adopcionService.findByFechaBetween(inicio, fin, pageable);
+        Page<AdopcionDTO> page = adopcionService
+                .findByFechaBetween(inicio, fin, pageable)
+                .map(a -> new AdopcionDTO(
+                        a.getId(),
+                        a.getNombreAdoptante(),
+                        a.getFechaAdopcion(),
+                        a.getDireccion()
+                ));
+
         return ResponseEntity.ok(page);
     }
+
 //    /**
 //     * GET por nombre adoptante (no paginado)
 //     * /api/adopciones/nombre/{nombre}
@@ -126,7 +159,7 @@ public class AdopcionController {
      * Obtiene 1 por id
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Adopcion> findById(@PathVariable Long id) {
+    public ResponseEntity<AdopcionDTO> findById(@PathVariable Long id) {
 
         Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
 
@@ -134,26 +167,50 @@ public class AdopcionController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(adopcionOpt.get());
+        Adopcion a = adopcionOpt.get();
+
+        return ResponseEntity.ok(
+                new AdopcionDTO(
+                        a.getId(),
+                        a.getNombreAdoptante(),
+                        a.getFechaAdopcion(),
+                        a.getDireccion()
+                )
+        );
     }
+
 
     /**
      * Crea
      */
     @PostMapping
-    public ResponseEntity<Adopcion> create(@RequestBody Adopcion adopcion) {
+    public ResponseEntity<AdopcionDTO> create(@RequestBody AdopcionDTO dto) {
+
+        Adopcion adopcion = new Adopcion();
+        adopcion.setNombreAdoptante(dto.nombreAdoptante());
+        adopcion.setFechaAdopcion(dto.fechaAdopcion());
+        adopcion.setDireccion(dto.direccion());
 
         Adopcion guardada = adopcionService.save(adopcion);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
+
+        AdopcionDTO respuesta = new AdopcionDTO(
+                guardada.getId(),
+                guardada.getNombreAdoptante(),
+                guardada.getFechaAdopcion(),
+                guardada.getDireccion()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
+
 
     /**
      * actualiza
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Adopcion> update(
+    public ResponseEntity<AdopcionDTO> update(
             @PathVariable Long id,
-            @RequestBody Adopcion adopcion
+            @RequestBody AdopcionDTO dto
     ) {
 
         Optional<Adopcion> adopcionOpt = adopcionService.findById(id);
@@ -162,10 +219,21 @@ public class AdopcionController {
             return ResponseEntity.notFound().build();
         }
 
-        adopcion.setId(id);
+        Adopcion adopcion = adopcionOpt.get();
+        adopcion.setNombreAdoptante(dto.nombreAdoptante());
+        adopcion.setFechaAdopcion(dto.fechaAdopcion());
+        adopcion.setDireccion(dto.direccion());
+
         Adopcion actualizada = adopcionService.save(adopcion);
 
-        return ResponseEntity.ok(actualizada);
+        AdopcionDTO dtoActualizado = new AdopcionDTO(
+                actualizada.getId(),
+                actualizada.getNombreAdoptante(),
+                actualizada.getFechaAdopcion(),
+                actualizada.getDireccion()
+        );
+
+        return ResponseEntity.ok(dtoActualizado);
     }
 
     /**

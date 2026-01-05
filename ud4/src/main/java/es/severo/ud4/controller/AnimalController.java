@@ -6,7 +6,9 @@ import es.severo.ud4.entities.AnimalEstado;
 import es.severo.ud4.entities.AnimalTipo;
 import es.severo.ud4.service.AnimalService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,22 +37,19 @@ public class AnimalController {
      */
     @GetMapping
     public ResponseEntity<Page<AnimalDTO>> findAll(
-           // @RequestParam(required = false) AnimalEstado estado,
-            @RequestParam(required = false) AnimalTipo tipo,
-            @PageableDefault(size = 10, sort = "fechaIngreso") Pageable pageable
+            @RequestParam(required = false) AnimalTipo tipo
     ) {
 
+        Pageable pageable = PageRequest.of(0, 10);
+
         Page<Animal> animales;
-//
-//        if (estado != null) {
-//            animales = animalService.findByEstado(estado, pageable);
+
         if (tipo != null) {
             animales = animalService.findByTipo(tipo, pageable);
         } else {
             animales = animalService.findAll(pageable);
         }
 
-        // Mapeo Entity -> DTO
         Page<AnimalDTO> animalesDTO = animales.map(animal ->
                 new AnimalDTO(
                         animal.getId(),
@@ -63,6 +62,7 @@ public class AnimalController {
 
         return ResponseEntity.ok(animalesDTO);
     }
+
     /**
      * GET por estado (sin paginar)
      * /api/animales/estado/{estado}

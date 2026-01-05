@@ -70,6 +70,7 @@ public class GrupoController {
 
     /**
      * GET por responsable (JPQL)
+     * Devuelve los grupos con el dni del responsable
      * /api/grupos/responsable/{dni}
      */
     @GetMapping("/responsable/{dni}")
@@ -91,6 +92,7 @@ public class GrupoController {
     }
     /**
      * GET responsable de un grupo
+     * Devuelve el responsable del grupo con id X
      * /api/grupos/{id}/responsable
      */
     @GetMapping("/{id}/responsable")

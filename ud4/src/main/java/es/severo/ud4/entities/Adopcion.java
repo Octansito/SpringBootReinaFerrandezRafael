@@ -25,7 +25,7 @@ public class Adopcion {
     @Column(name = "nombre_adoptante", nullable = false)
     private String nombreAdoptante;
 
-    @Column(name="telefono", nullable = false)
+    @Column(name="telefono")
     private String telefono;
 
     @Column(name = "fecha_adopcion", nullable = false)
