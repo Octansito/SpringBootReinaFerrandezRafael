@@ -19,6 +19,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/grupos")
+/**
+ * Controlador REST de grupo.
+ * Expone endpoints para gestionar adopciones (CRUD) y consultas.
+ */
 public class GrupoController {
 
     private final GrupoService grupoService;
@@ -235,7 +239,7 @@ public class GrupoController {
     }
 
     /**
-     * DELETE
+     * elimina
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

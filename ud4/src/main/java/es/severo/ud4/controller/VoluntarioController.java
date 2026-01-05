@@ -17,6 +17,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/voluntarios")
+/**
+ * Controlador REST de voluntarios.
+ * Expone endpoints para gestionar adopciones (CRUD) y consultas.
+ */
 public class VoluntarioController {
 
     private final VoluntarioService voluntarioService;
@@ -234,7 +238,7 @@ public class VoluntarioController {
     }
 
     /**
-     * DELETE
+     * elimina
      */
     @DeleteMapping("/{dni}")
     public ResponseEntity<Void> delete(@PathVariable String dni) {

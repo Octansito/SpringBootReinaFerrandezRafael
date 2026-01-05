@@ -42,7 +42,7 @@ public class AnimalService {
         return animalRepository.findByEstado(estado);
     }
 
-    // Filtro por estado + ordenación por fechaIngreso DESC
+    // Filtro por estado y ordenación por fechaIngreso DESC
     public Page<Animal> findByEstadoOrderByFechaIngresoDesc(
             AnimalEstado estado,
             Pageable pageable

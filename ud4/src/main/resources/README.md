@@ -7,7 +7,11 @@ Base de Datos
 **Los atributos int al hacer reverse engineer/ forward engineer han pasado a ser BIGINT
 ![img_7.png](img_7.png).
 
-Creación del proyecto en Intellij, estructuración de carpetas y creación de las entities en fase beta (día 23/12/2025).
+Para crear el proyecto en IntelliJ de Springboot se siguieron los pasos marcados en los apuntes instalando todas las dependencias marcadas (día 23/12/2025).
+![img_71.png](img_71.png)
+
+Una vez creado en la carpeta específica, se estructuraron todas las carpetas según los apuntes y se crearon de las entities en fase beta (día 23/12/2025).
+![img_72.png](img_72.png)
 ![img_32.png](img_32.png)
 ![img_33.png](img_33.png)
 
@@ -37,7 +41,8 @@ Entities:
 ![img_42.png](img_42.png)
 
 Dos días más tarde, Se realizaron modificaciones menores en las entidades, incorporando la anotación @Column(name="...") para especificar 
-explícitamente el nombre de la columna en la base de datos asociada a cada atributo. Además, se crearon las clases DTO y Repository (día 25/12/2025).
+explícitamente el nombre de la columna en la base de datos asociada a cada atributo. Además, se crearon las clases DTO y Repository no definitivas porque se fueron 
+modificando conforme avanzaba el proyecto(día 25/12/2025).
 
 Ejemplo de modificación de las entities:
 ![img_43.png](img_43.png)
@@ -74,14 +79,73 @@ Clases Repository:
 ![img_58.png](img_58.png)
 
 
+Se crearon las clases controller no definitivas porque se fueron modificando a lo largo del proyecto aunque las que se 
+muestran son las definitivas (día 27/12/2025).
+
+Clases Controller:
+![img_59.png](img_59.png)
+
+-AdopciónController
+![img_60.png](img_60.png)
+
+-AnimalController
+![img_64.png](img_64.png)
+
+-GrupoController
+![img_62.png](img_62.png)
+
+-VoluntarioController
+![img_63.png](img_63.png)
+
+
+Se crearon las clases Services con los crud, que durante el mismo día se modificaron. Se reescribió y reestructuró
+las clases Controller y se comentaron los métodos duplicados para su eliminación porque no me percaté de que
+se obtenía la misma información pero hecho de distinta manera(día 28/12/2025).
+
+Clases Services:
+![img_65.png](img_65.png)
+
+-AdopcionService
+![img_66.png](img_66.png)
+
+-AnimalService
+![img_67.png](img_67.png)
+
+-GrupoService
+![img_68.png](img_68.png)
+
+-VoluntarioService
+![img_69.png](img_69.png)
+
+Al día siguiente, comencé el README.md pegando capturas, añadí el @NamedQuery que solicitaba el enunciado del proyecto 
+en animal sustituyendo a la query predefinida con anterioridad y metí subrutas en los controllers (día 29/12/2025).
+
+![img_70.png](img_70.png)
+
+
+Traté de hacer alguna prueba ya, pero tuve muchísimos problemas de dependencias y de puertos (los puertos 808X) me aparecían
+todos como ocupados así que al final opté por usar el puerto 9090 que si me dejó arrancar Sprinboot y con ello meterme al Swagger. Además, hice 
+pequeñas modificaciones en las entities (ej: cambiando int por Integer), cambiando la versión del framework de spring y la version del lenguaje Java, modifqué
+mil veces todas las dependencias
+
+-Fallo puerto 808X
 ![img.png](img.png)
 ![img_1.png](img_1.png)
+
+
+-Arranque Swagger puerto 9090
+
 ![img_2.png](img_2.png)
 ![img_8.png](img_8.png)
+
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)
 ![img_5.png](img_5.png)
 ![img_6.png](img_6.png)
+
+Comencé con las pruebas a través de Swagger y Postman, salieron con éxito. En las imágenes están
+todas las pruebas que se pedían en el enunciado (día 03/01/2026).
+
 ![img_9.png](img_9.png)
 ![img_10.png](img_10.png)
 ![img_11.png](img_11.png)
@@ -91,6 +155,7 @@ Clases Repository:
 
 Prueba subrutas:
 ![img_14.png](img_14.png)
+
 Me daba fallo el get en Swagger y probé en PostMan para obtener la adopción
 ![img_15.png](img_15.png)
 

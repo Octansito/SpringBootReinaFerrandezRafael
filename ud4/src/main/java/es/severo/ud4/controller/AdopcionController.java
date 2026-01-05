@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Controlador REST de adopciones.
+ * Expone endpoints para gestionar adopciones (CRUD) y consultas.
+ */
 @RestController
 @RequestMapping("/api/adopciones")
 public class AdopcionController {
@@ -271,7 +274,7 @@ public class AdopcionController {
 
 
     /**
-     * DELETE
+     * elimina
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

@@ -19,6 +19,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/animales")
+/**
+ * Controlador REST de animales.
+ * Expone endpoints para gestionar adopciones (CRUD) y consultas.
+ */
 public class AnimalController {
 
 
@@ -30,7 +34,6 @@ public class AnimalController {
 
     /**
      * GET ALL + filtros (estado o tipo)
-     * Ejemplo:
      * /api/animales
      * /api/animales?estado=Adoptado
      * /api/animales?tipo=Perro
@@ -277,7 +280,7 @@ public class AnimalController {
     }
 
     /**
-     * DELETE
+     * elimina
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
