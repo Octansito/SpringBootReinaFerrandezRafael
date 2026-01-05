@@ -7,8 +7,71 @@ Base de Datos
 **Los atributos int al hacer reverse engineer/ forward engineer han pasado a ser BIGINT
 ![img_7.png](img_7.png).
 
+Creación del proyecto en Intellij, estructuración de carpetas y creación de las entities en fase beta (día 23/12/2025).
+![img_32.png](img_32.png)
+![img_33.png](img_33.png)
+
+Entities:
+
+-Adopcion
+![img_34.png](img_34.png)
+
+-Animal 
+![img_35.png](img_35.png)
+![img_36.png](img_36.png)
+
+-Enums de animal
+![img_37.png](img_37.png)
+![img_38.png](img_38.png)
+
+-Grupo
+![img_39.png](img_39.png)
+
+-Enums de Grupo
+![img_40.png](img_40.png)
+
+-Voluntario
+![img_41.png](img_41.png)
+
+-Enums de Voluntario
+![img_42.png](img_42.png)
+
+Dos días más tarde, Se realizaron modificaciones menores en las entidades, incorporando la anotación @Column(name="...") para especificar 
+explícitamente el nombre de la columna en la base de datos asociada a cada atributo. Además, se crearon las clases DTO y Repository (día 25/12/2025).
+
+Ejemplo de modificación de las entities:
+![img_43.png](img_43.png)
+
+Clases DTO creadas:
+![img_44.png](img_44.png)
+
+-Adopción DTO 
+![img_45.png](img_45.png)
+
+-Animal DTO
+![img_46.png](img_46.png)
+
+-Grupo DTO
+![img_47.png](img_47.png)
+
+-VoluntarioDTO
+![img_48.png](img_48.png)
 
 
+Clases Repository:
+![img_54.png](img_54.png)
+
+-AdopciónRepository
+![img_55.png](img_55.png)
+
+-AnimalRepository
+![img_56.png](img_56.png)
+
+-GrupoRepository
+![img_57.png](img_57.png)
+
+-VoluntarioRepository
+![img_58.png](img_58.png)
 
 
 ![img.png](img.png)
